@@ -1,12 +1,11 @@
 package info.devexchanges.firebasefilestorage;
 
-import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Toast;
 
@@ -20,17 +19,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class MainActivity extends AppCompatActivity {
+public class UploadActivity extends RootActivity {
 
     private StorageReference storageReference;
     private FirebaseStorage storage;
-    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_upload);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReferenceFromUrl("gs://filestorage-d5afb.appspot.com").child("firebase.png");
 
@@ -38,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         btnUploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AssetManager assetManager = MainActivity.this.getAssets();
+                AssetManager assetManager = UploadActivity.this.getAssets();
                 InputStream istr;
                 Bitmap bitmap;
                 try {
@@ -59,13 +57,13 @@ public class MainActivity extends AppCompatActivity {
                         public void onFailure(@NonNull Exception exception) {
                             exception.printStackTrace();
                             dismissProgressDialog();
-                            Toast.makeText(MainActivity.this, "Upload Failed!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UploadActivity.this, "Upload Failed!", Toast.LENGTH_SHORT).show();
                         }
                     }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             dismissProgressDialog();
-                            Toast.makeText(MainActivity.this, "Upload successful!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UploadActivity.this, "Upload successful!", Toast.LENGTH_SHORT).show();
                         }
                     });
 
@@ -90,24 +88,25 @@ public class MainActivity extends AppCompatActivity {
                     public void onFailure(@NonNull Exception exception) {
                         exception.printStackTrace();
                         dismissProgressDialog();
-                        Toast.makeText(MainActivity.this, "Upload Failed!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UploadActivity.this, "Upload Failed!", Toast.LENGTH_SHORT).show();
                     }
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         dismissProgressDialog();
-                        Toast.makeText(MainActivity.this, "Upload successful!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UploadActivity.this, "Upload successful!", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         });
-    }
 
-    private void showProgressDialog(String title, String msg) {
-        progressDialog = ProgressDialog.show(this, title, msg, true);
-    }
-
-    private void dismissProgressDialog() {
-        progressDialog.dismiss();
+        View btnDownload = findViewById(R.id.btn_download);
+        btnDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(UploadActivity.this, DownloadActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }
